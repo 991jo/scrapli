@@ -12,18 +12,22 @@ from scrapli.helper import _find_transport_plugin, resolve_ssh_config, resolve_s
 from scrapli.transport import (
     SYSTEM_SSH_TRANSPORT_ARGS,
     TELNET_TRANSPORT_ARGS,
+    SERIAL_TRANSPORT_ARGS,
     SystemSSHTransport,
     TelnetTransport,
+    SerialTransport,
     Transport,
 )
 
 TRANSPORT_CLASS: Dict[str, Callable[..., Transport]] = {
     "system": SystemSSHTransport,
     "telnet": TelnetTransport,
+    "serial": SerialTransport,
 }
 TRANSPORT_ARGS: Dict[str, Tuple[str, ...]] = {
     "system": SYSTEM_SSH_TRANSPORT_ARGS,
     "telnet": TELNET_TRANSPORT_ARGS,
+    "serial": SERIAL_TRANSPORT_ARGS,
 }
 TRANSPORT_BASE_ARGS = (
     "host",
@@ -192,7 +196,7 @@ class ScrapeBase:
             msg = "`system` transport is not supported on Windows, please use a different transport"
             raise UnsupportedPlatform(msg)
 
-        if transport != "telnet":
+        if transport not in ["telnet", "serial"]:
             self._setup_ssh_args(
                 ssh_config_file=ssh_config_file, ssh_known_hosts_file=ssh_known_hosts_file
             )
